@@ -1,66 +1,44 @@
 name: CI
 
 on:
+  release:
+    types: [created]
   push:
-  pull_request:
+  schedule:
+    # Runs every Thursday at 20:23 GMT to avoid bit rot
+    - cron: "20 23 * * 4"
 
 jobs:
-  linux:
+  lint:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-    - uses: messense/maturin-action@v1
-      with:
-        manylinux: auto
-        command: build
-        args: --release -o dist
-    - name: Upload wheels
-      uses: actions/upload-artifact@v2
-      with:
-        name: wheels
-        path: dist
+      - name: Checkout
+        uses: actions/checkout@v1
 
-  windows:
-    runs-on: windows-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: messense/maturin-action@v1
-      with:
-        command: build
-        args: --release --no-sdist -o dist
-    - name: Upload wheels
-      uses: actions/upload-artifact@v2
-      with:
-        name: wheels
-        path: dist
-
-  macos:
-    runs-on: macos-latest
-    steps:
-    - uses: actions/checkout@v3
-    - uses: messense/maturin-action@v1
-      with:
-        command: build
-        args: --release --no-sdist -o dist --universal2
-    - name: Upload wheels
-      uses: actions/upload-artifact@v2
-      with:
-        name: wheels
-        path: dist
-
-  release:
-    name: Release
-    runs-on: ubuntu-latest
-    if: "startsWith(github.ref, 'refs/tags/')"
-    needs: [ macos, windows, linux ]
-    steps:
-      - uses: actions/download-artifact@v2
+      - name: Install latest nightly
+        uses: actions-rs/toolchain@v1
         with:
-          name: wheels
-      - name: Publish to PyPI
-        uses: messense/maturin-action@v1
-        env:
-          MATURIN_PYPI_TOKEN: ${{ secrets.PYPI_API_TOKEN }}
+          toolchain: nightly
+          override: true
+          components: rustfmt, clippy
+
+      - name: Lint with rustfmt
+        uses: actions-rs/cargo@v1
         with:
-          command: upload
-          args: --skip-existing *
+          command: fmt
+
+      - name: Lint with clippy
+        uses: actions-rs/cargo@v1
+        with:
+          command: clippy
+          args: --all-targets --all-features
+
+      - name: Test with cargo
+        uses: actions-rs/cargo@v1.0.1
+        with:
+          command: test
+          toolchain: nightly
+
+  build:
+    runs-on: ${{ matrix.os }}
+    needs: lint
