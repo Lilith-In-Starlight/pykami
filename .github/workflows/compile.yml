@@ -24,4 +24,4 @@ jobs:
           override: true
 
       - name: Build Python package
-        run: poetry run maturin build --release
+        run: maturin build --release
