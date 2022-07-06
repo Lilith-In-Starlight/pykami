@@ -1,6 +1,6 @@
 [package]
 name = "pykami"
-version = "0.2.2"
+version = "0.2.3"
 authors = ["Katie Ampersand <katie-and@ampersandia.net>"]
 description = "A python module that parses KAMI into HTML"
 edition = "2021"
