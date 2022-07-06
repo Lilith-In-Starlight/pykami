@@ -37,8 +37,3 @@ jobs:
         with:
           name: my-artifact
           path: target/wheels/
-
-      - name: PyPi publish
-        env:
-          MATURIN_PASSWORD: ${{ secrets.PYPI }}
-        run: maturin publish --username __token__
