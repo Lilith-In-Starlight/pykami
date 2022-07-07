@@ -3,7 +3,7 @@ use kami_parser::syntax;
 
 /// Formats the sum of two numbers as string.
 #[pyfunction]
-fn parse(a: String) -> PyResult<String> {
+fn parse(a: String) -> PyResult<(String, String)> {
     Ok(syntax::parse(&a))
 }
 
