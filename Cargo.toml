@@ -1,6 +1,6 @@
 [package]
 name = "pykami"
-version = "0.4.1"
+version = "0.4.2"
 authors = ["Katie Ampersand <katie-and@ampersandia.net>"]
 description = "A python module that parses KAMI into HTML"
 edition = "2021"
@@ -17,4 +17,4 @@ crate-type = ["cdylib"]
 
 [dependencies]
 pyo3 = { version = "0.16.5", features = ["extension-module"] }
-kami-parser = "0.6.1"
+kami-parser = "0.6.2"
